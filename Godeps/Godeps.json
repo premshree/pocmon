@@ -59,11 +59,6 @@
 			"Rev": "ca8436d76f805ec1e682eaae2de3c3a9bc894b0f"
 		},
 		{
-			"ImportPath": "github.com/pelletier/go-buffruneio",
-			"Comment": "v0.2.0",
-			"Rev": "c37440a7cf42ac63b919c752ca73a85067e05992"
-		},
-		{
 			"ImportPath": "github.com/pelletier/go-toml",
 			"Comment": "v1.0.0-7-g69d355d",
 			"Rev": "69d355db5304c0f7f809a2edc054553e7142f016"
