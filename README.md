@@ -34,7 +34,7 @@ The main motivations behind pocmon were:
 # Adding pocmon to your Slack channel
 
 pocmon works only as a custom [bot user](https://api.slack.com/bot-users) (Slack's API won't allow the `channels:write` OAuth scope for app bots.)
-- First, go ahead and [create a new bot user](https://my.slack.com/services/new/bot) for your team.
+- Go ahead and [create a new bot user](https://my.slack.com/services/new/bot) for your team. Let's assume you called it `@pocmon`
 - Note the API Token for your custom bot.
 
 # Installation
@@ -51,8 +51,9 @@ go run main.go
 
 Deploying your bot to Heroku is seamless.
 
+### Using Heroku Git
 ```
-$ git@github.com:premshree/pocmon.git
+$ git clone git@github.com:premshree/pocmon.git
 $ heroku login
 $ heroku create
 $ heroku config:set POCMON_TOKEN=YOUR-SLACK-TOKEN
@@ -60,4 +61,18 @@ $ git push heroku master
 $ heroku ps:scale worker=1
 ```
 
-You can also alternately push to github and connect your Heroku app to github. Your commit to github can automatically trigger a deploy to Heroku.
+### Using Github
+
+- Fork [this repo](https://github.com/premshree/pocmon)
+- [Create a new app](https://dashboard.heroku.com/new-app) on Heroku
+- In your app dashboard, use "Github" as your Deployment method. Github will want to authorize access to your repo to Heroku.
+- Look for the "Deploy a Github Branch" in your Heroku app dashboard and click "Deploy Branch". Et voila!
+
+(For those magic-averse folks like me, how the hell does this work? pocmon has a Heroku `Procfile` defined and uses [godep](https://github.com/tools/godep) to manage dependencies. Heroku's [Go buildpack](https://github.com/heroku/heroku-buildpack-go) detects all of this and knows how to run your app.)
+
+# Running pocmon in your Slack Channel
+
+Invite pocmon to your channel on Slack:
+```
+/invite @pocmon
+```
