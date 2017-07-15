@@ -101,9 +101,10 @@ func getAvailableRotators(channel slack.Channel, replenish bool) []string {
   if rotators == nil {
     rotated = make(map[string]map[string]bool) // reset rotated
     rotators = getAvailableRotators(channel, true)
+    log.Print("... no rotators left!")
   }
 
-  fmt.Printf("Rotators: %v\n", rotators)
+  log.Printf("Rotators: %v\n", rotators)
   return rotators
 }
 
