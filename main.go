@@ -46,7 +46,6 @@ func init() {
 
 func main() {
 	api = slack.New(token)
-  api.SetDebug(true)
 	rtm := api.NewRTM()
 	go rtm.ManageConnection()
 
