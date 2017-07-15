@@ -31,10 +31,33 @@ The main motivations behind pocmon were:
 }
 ```
 
+# Adding pocmon to your Slack channel
+
+pocmon works only as a custom [bot user](https://api.slack.com/bot-users) (Slack's API won't allow the `channels:write` OAuth scope for app bots.)
+- First, go ahead and [create a new bot user](https://my.slack.com/services/new/bot) for your team.
+- Note the API Token for your custom bot.
 
 # Installation
 
+Before you are ready to run pocmon, you'll need a Slack API token for your bot user. See above.
+
 ```
 go get github.com/premshree/pocmon
+export POCMON_TOKEN=YOUR-SLACK-TOKEN
 go run main.go
 ```
+
+# Deploying your bot to Heroku
+
+Deploying your bot to Heroku is seamless.
+
+```
+$ git@github.com:premshree/pocmon.git
+$ heroku login
+$ heroku create
+$ heroku config:set POCMON_TOKEN=YOUR-SLACK-TOKEN
+$ git push heroku master
+$ heroku ps:scale worker=1
+```
+
+You can also alternately push to github and connect your Heroku app to github. Your commit to github can automatically trigger a deploy to Heroku.

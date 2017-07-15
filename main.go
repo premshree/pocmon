@@ -6,11 +6,11 @@ import (
   "regexp"
   "time"
 
-	"github.com/nlopes/slack"
+  "github.com/nlopes/slack"
   "github.com/robfig/cron"
   "github.com/spf13/viper"
 
-	"log"
+  "log"
 )
 
 type Config struct {
@@ -22,8 +22,8 @@ type Config struct {
 
 var (
   token string // set this in env
-	api *slack.Client
-	config Config
+  api *slack.Client
+  config Config
   rotators map[string][]string // rotators by channel
   rotated map[string]map[string]bool
 )
@@ -32,7 +32,7 @@ func init() {
   viper := viper.New()
   viper.SetConfigFile("./config.json")
   viper.AutomaticEnv()
-	viper.ReadInConfig()
+  viper.ReadInConfig()
 
   log.Printf("Using config: %s\n", viper.ConfigFileUsed())
 
@@ -45,9 +45,9 @@ func init() {
 }
 
 func main() {
-	api = slack.New(token)
-	rtm := api.NewRTM()
-	go rtm.ManageConnection()
+  api = slack.New(token)
+  rtm := api.NewRTM()
+  go rtm.ManageConnection()
 
   rand.Seed(time.Now().Unix())
   rotators = make(map[string][]string)
