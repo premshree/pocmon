@@ -1,7 +1,7 @@
 {
   "config": {
     "rotate_frequency": "0 */1 * * * *",
-    "poc_message_patten": "POC: @%s",
+    "poc_message_pattern": "POC: @%s",
     "message_poc_change": "Hi @%s, you're the POC for #%s!",
     "excluded_rotators": {
     }

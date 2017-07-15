@@ -15,7 +15,7 @@ import (
 
 type Config struct {
   RotateFrequency string `mapstructure:"rotate_frequency"`
-  PocMessagePattern string `mapstructure:"poc_message_patten"`
+  PocMessagePattern string `mapstructure:"poc_message_pattern"`
   MessagePocChange string `mapstructure:"message_poc_change"`
   ExcludedRotators map[string]bool `mapstructure:"excluded_rotators"`
 }
