@@ -1,0 +1,9 @@
+{
+  "config": {
+    "rotate_frequency": "*/3 * * * * *",
+    "poc_message_patten": "POC: @%s",
+    "message_poc_change": "Hi @%s, you're the POC for #%s!",
+    "excluded_rotators": {
+    }
+  }
+}
