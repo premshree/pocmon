@@ -6,3 +6,5 @@ go:
 before_script:
   - GO_FILES=$(find . -iname '*.go' | grep -v /vendor/)  # All the .go files, excluding vendor/
   - PKGS=$(go list ./... | grep -v /vendor/)             # All the import paths, excluding vendor/
+
+script: go test ./
