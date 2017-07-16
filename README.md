@@ -1,10 +1,18 @@
 # What is pocmon?
 
-pocmon is a a Slack Bot that runs in the background in any channel you invite it to and periodically picks someone to be a "Point Of Contact" (or, POC for short) by adding that information to the channel's Topic and letting that user know that they are now a POC.
+pocmon is a a Slack Bot that runs in the background in any channel you invite it to and periodically picks someone in the channel to be a "Point Of Contact" (or, POC for short) by adding that information to the channel's Topic and letting that user know that they are now a POC.
 
 The main motivations behind pocmon were:
 - facilitate inter-team communication by making it easy for external teams to know who to ask for help in a channel
 - not have any one person be overwhelmed by messages
+
+# How It Works
+
+pocmon is very simple. Under the hood it does a few things:
+- It keeps track of all the channels it is in and a list of rotators for each channel during each "run"
+- It keeps track of people who have already been a POC so they are not picked again
+- Amongst the "available rotators", it shuffles the list and then picks the first person from that list
+- When there are no more rotators available, it will "replenish" the list by clearing out the already-rotated list.
 
 # Configuration
 
@@ -47,7 +55,7 @@ export POCMON_TOKEN=YOUR-SLACK-TOKEN
 go run main.go
 ```
 
-# Deploying your bot to Heroku
+# Deploying pocmon to Heroku
 
 Deploying your bot to Heroku is seamless.
 
@@ -76,3 +84,7 @@ Invite pocmon to your channel on Slack:
 ```
 /invite @pocmon
 ```
+
+# TBD
+- Allow configuring "business hours" when pocmon sleeps.
+- Set config by talking to @pocmon directly?
