@@ -1,3 +1,5 @@
+![](https://travis-ci.org/premshree/pocmon.svg?branch=master)
+
 # What is pocmon?
 
 pocmon is a a Slack Bot that runs in the background in any channel you invite it to and periodically picks someone in the channel to be a "Point Of Contact" (or, POC for short) by adding that information to the channel's Topic and letting that user know that they are now a POC.
