@@ -3,10 +3,6 @@ language: go
 go:
   - 1.7.x
 
-# Skip the install step. Don't `go get` dependencies. Only build with the
-# code in vendor/
-install: true
-
 before_script:
   - GO_FILES=$(find . -iname '*.go' | grep -v /vendor/)  # All the .go files, excluding vendor/
   - PKGS=$(go list ./... | grep -v /vendor/)             # All the import paths, excluding vendor/

@@ -1,4 +1,4 @@
-![](https://travis-ci.org/premshree/pocmon.svg?branch=master)
+[![Build Status](https://travis-ci.org/premshree/pocmon.svg?branch=master)](https://travis-ci.org/premshree/pocmon)
 
 # What is pocmon?
 
