@@ -40,6 +40,14 @@ pocmon is very simple. Under the hood it does a few things:
     "johndoe": true
 }
 ```
+- `included_rotators` When `included_rotators` is not empty, pocmon will only rotate those in that list to be a POC. For example:
+```json
+"included_rotators": {
+    "janedoe": true,
+    "johndoe": true
+}
+```
+This is useful when you have a channel with a large number of members, but only a few who can guide people and effectively act as a POC.
 
 # Adding pocmon to your Slack channel
 
@@ -90,3 +98,4 @@ Invite pocmon to your channel on Slack:
 # TBD
 - Allow configuring "business hours" when pocmon sleeps.
 - Set config by talking to @pocmon directly?
+- Add some tests ¯\\_(ツ)_/¯

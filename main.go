@@ -18,6 +18,7 @@ type Config struct {
   PocMessagePattern string `mapstructure:"poc_message_pattern"`
   MessagePocChange string `mapstructure:"message_poc_change"`
   ExcludedRotators map[string]bool `mapstructure:"excluded_rotators"`
+  IncludedRotators map[string]bool `mapstructure:"included_rotators"`
 }
 
 var (
@@ -68,7 +69,6 @@ func rotate() {
     }
 
     rotators[channel.Name] = getAvailableRotators(channel, false)
-    rotators[channel.Name] = shuffleSlice(rotators[channel.Name])
 
     rotator := rotators[channel.Name][0]
     if rotated[channel.Name] == nil {
@@ -88,6 +88,11 @@ func getAvailableRotators(channel slack.Channel, replenish bool) []string {
     if err != nil {
       log.Fatal("Error getting channel members")
     }
+    if len(config.IncludedRotators) != 0 {
+      if !config.IncludedRotators[user.Name] {
+        continue
+      }
+    }
     if config.ExcludedRotators[user.Name] {
       continue
     }
@@ -99,12 +104,14 @@ func getAvailableRotators(channel slack.Channel, replenish bool) []string {
   }
 
   if rotators == nil {
-    rotated = make(map[string]map[string]bool) // reset rotated
-    rotators = getAvailableRotators(channel, true)
     log.Print("... no rotators left!")
+    rotated = make(map[string]map[string]bool) // reset rotated
+    return getAvailableRotators(channel, true)
   }
 
+  rotators = shuffleSlice(rotators)
   log.Printf("Rotators: %v\n", rotators)
+
   return rotators
 }
 
