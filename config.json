@@ -1,10 +1,19 @@
 {
   "config": {
-    "rotate_frequency": "*/10 * * * * *",
+    "rotate_frequency": "0 0 */1 * * *",
     "poc_message_pattern": "POC: @%s",
     "message_poc_change": "Hi @%s, you're the POC for #%s!",
     "included_rotators": {
-	"ppillai": true
+      "ahenson": true,
+      "apatel": true,
+      "ppillai": true,
+      "dmueller": true,
+      "eukim": true,
+      "isevrugin": true,
+      "plai": true,
+      "slazarov": true,
+      "xsun": true,
+      "zmackie": true
     },
     "excluded_rotators": {
     }
