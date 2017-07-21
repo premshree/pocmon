@@ -4,7 +4,7 @@
     "poc_message_pattern": "POC: @%s",
     "message_poc_change": "Hi @%s, you're the POC for #%s!",
     "included_rotators": {
-	"premshree": true
+	"ppillai": true
     },
     "excluded_rotators": {
     }
