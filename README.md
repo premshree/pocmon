@@ -10,7 +10,7 @@ The main motivations behind pocmon were:
 
 # Screenshot
 
-![pocmon screenshot](https://user-images.githubusercontent.com/149517/28494303-14baa996-6ef8-11e7-858e-037d08bb16f3.png)
+<img src="https://user-images.githubusercontent.com/149517/28494303-14baa996-6ef8-11e7-858e-037d08bb16f3.png" alt="pocmon screenshot" width="1202"/>
 
 # How It Works
 
