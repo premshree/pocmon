@@ -8,6 +8,10 @@ The main motivations behind pocmon were:
 - facilitate inter-team communication by making it easy for external teams to know who to ask for help in a channel
 - not have any one person be overwhelmed by messages
 
+# Screenshot
+
+![pocmon screenshot](https://user-images.githubusercontent.com/149517/28494303-14baa996-6ef8-11e7-858e-037d08bb16f3.png)
+
 # How It Works
 
 pocmon is very simple. Under the hood it does a few things:
