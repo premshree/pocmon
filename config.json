@@ -1,11 +1,24 @@
 {
-  "config": {
-    "rotate_frequency": "0 */10 * * * *",
-    "poc_message_pattern": "POC: @%s",
-    "message_poc_change": "Hi @%s, you're the POC for #%s!",
-    "included_rotators": {
+  "channels": [
+    {
+      "name": "general",
+      "rotate_frequency": "*/3 * * * * *",
+      "poc_message_pattern": "POC: @%s",
+      "message_poc_change": "Hi @%s, you're the POC for #%s!",
+      "included_rotators": {
+      },
+      "excluded_rotators": {
+      }
     },
-    "excluded_rotators": {
+    {
+      "name": "random",
+      "rotate_frequency": "*/5 * * * * *",
+      "poc_message_pattern": "Point-of-Contact: @%s",
+      "message_poc_change": "Hi @%s, you're the Point of Contact for #%s!",
+      "included_rotators": {
+      },
+      "excluded_rotators": {
+      }
     }
-  }
+  ]
 }

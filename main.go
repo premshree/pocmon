@@ -13,9 +13,19 @@ import (
   "log"
 )
 
-const PRESENCE_ACTIVE = "active"
+const (
+  PRESENCE_ACTIVE = "active"
+  POCMON_ENV_PREFIX = "pocmon"
+)
 
 type Config struct {
+  Channels []ChannelConfig `mapstructure:"channels"`
+}
+
+type SlackChannel slack.Channel
+
+type ChannelConfig struct {
+  Name string `mapstructure:"name"`
   RotateFrequency string `mapstructure:"rotate_frequency"`
   PocMessagePattern string `mapstructure:"poc_message_pattern"`
   MessagePocChange string `mapstructure:"message_poc_change"`
@@ -26,7 +36,9 @@ type Config struct {
 var (
   token string // set this in env
   api *slack.Client
+  channels map[string]slack.Channel
   config Config
+  channelConfigMap map[string]ChannelConfig
   rotators map[string][]string // rotators by channel
   rotated map[string]map[string]bool
 )
@@ -34,17 +46,19 @@ var (
 func init() {
   viper := viper.New()
   viper.SetConfigFile("./config.json")
+  viper.SetEnvPrefix(POCMON_ENV_PREFIX)
   viper.AutomaticEnv()
   viper.ReadInConfig()
 
   log.Printf("Using config: %s\n", viper.ConfigFileUsed())
 
-  token = viper.GetString("POCMON_TOKEN")
-  c := viper.Sub("config")
-  err := c.Unmarshal(&config)
+  token = viper.GetString("TOKEN")
+  err := viper.Unmarshal(&config)
   if err != nil {
     log.Fatalf("unable to decode config into struct: %v", err)
   }
+
+  channelConfigMap = getChannelConfigMap()
 }
 
 func main() {
@@ -53,23 +67,32 @@ func main() {
   go rtm.ManageConnection()
 
   rand.Seed(time.Now().Unix())
+
   rotators = make(map[string][]string)
   rotated = make(map[string]map[string]bool)
+  channels = getAllChannels()
 
   cron := cron.New()
-  cron.AddFunc(config.RotateFrequency, rotate)
+  for _, channel := range config.Channels {
+    cron.AddFunc(channel.RotateFrequency, rotate(channel.Name))
+  }
   cron.Start()
 
   select { }
 }
 
-func rotate() {
-  log.Print("⟳ Rotating...")
-  channels, _ := api.GetChannels(false)
-  for _, channel := range channels {
-    if !channel.IsMember {
-      continue
+func rotate(channelName string) func() {
+  return func() {
+    if _, ok := channels[channelName]; !ok {
+      log.Fatalf("Uh oh, #%v not found", channelName)
     }
+
+    channel := channels[channelName]
+    if !channel.IsMember {
+      log.Fatalf("Uh oh, @pocmon is not in #%v", channelName)
+    }
+
+    log.Printf("⟳ Rotating POC for #%v ...", channelName)
 
     rotators[channel.Name] = getAvailableRotators(channel, false)
 
@@ -96,18 +119,17 @@ func getAvailableRotators(channel slack.Channel, replenish bool) []string {
     if err != nil {
       log.Fatal("Cannot get User Presence")
     }
-
     if presence.Presence != PRESENCE_ACTIVE {
       continue
     }
 
-    if len(config.IncludedRotators) != 0 {
-      if !config.IncludedRotators[user.Name] {
+    if len(channelConfigMap[channel.Name].IncludedRotators) != 0 {
+      if !channelConfigMap[channel.Name].IncludedRotators[user.Name] {
         continue
       }
     }
 
-    if config.ExcludedRotators[user.Name] {
+    if channelConfigMap[channel.Name].ExcludedRotators[user.Name] {
       continue
     }
 
@@ -119,13 +141,13 @@ func getAvailableRotators(channel slack.Channel, replenish bool) []string {
   }
 
   if rotators == nil {
-    log.Print("... no rotators left!")
-    rotated = make(map[string]map[string]bool) // reset rotated
+    log.Printf("... #%v has no rotators left!", channel.Name)
+    rotated[channel.Name] = nil
     return getAvailableRotators(channel, true)
   }
 
   rotators = shuffleSlice(rotators)
-  log.Printf("Rotators: %v\n", rotators)
+  log.Printf("Rotators for #%v: %v [refresh:%v]\n", channel.Name, rotators, replenish)
 
   return rotators
 }
@@ -133,7 +155,7 @@ func getAvailableRotators(channel slack.Channel, replenish bool) []string {
 func sendMessageToRotator(channel slack.Channel, rotator string) {
   _, _, errPostMessage := api.PostMessage(
     channel.Name,
-    fmt.Sprintf(config.MessagePocChange, rotator, channel.Name),
+    fmt.Sprintf(channelConfigMap[channel.Name].MessagePocChange, rotator, channel.Name),
     slack.PostMessageParameters{})
   if errPostMessage != nil {
     log.Fatal(errPostMessage)
@@ -144,20 +166,39 @@ func updateChannelTopic(channel slack.Channel, rotator string) {
   var topic string
 
   r := regexp.MustCompile("%s")
-  pocPattern := r.ReplaceAllString(config.PocMessagePattern, "[a-z]+")
+  pocPattern := r.ReplaceAllString(channelConfigMap[channel.Name].PocMessagePattern, "[a-z-]+")
   r = regexp.MustCompile(pocPattern)
   if r.MatchString(channel.Topic.Value) {
-    topic = r.ReplaceAllString(channel.Topic.Value, fmt.Sprintf(config.PocMessagePattern, rotator))
+    topic = r.ReplaceAllString(channel.Topic.Value, fmt.Sprintf(channelConfigMap[channel.Name].PocMessagePattern, rotator))
   } else if channel.Topic.Value != "" {
-    topic = fmt.Sprintf(channel.Topic.Value + " | " + config.PocMessagePattern, rotator)
+    topic = fmt.Sprintf(channel.Topic.Value + " | " + channelConfigMap[channel.Name].PocMessagePattern, rotator)
   } else {
-    topic = fmt.Sprintf(config.PocMessagePattern, rotator)
+    topic = fmt.Sprintf(channelConfigMap[channel.Name].PocMessagePattern, rotator)
   }
 
   _, err := api.SetChannelTopic(channel.ID, topic)
   if err != nil {
     log.Fatal(err)
   }
+}
+
+func getAllChannels() map[string]slack.Channel {
+  allChannels, _ := api.GetChannels(false)
+  channelsMap := make(map[string]slack.Channel)
+  for _, channel := range allChannels {
+    channelsMap[channel.Name] = channel
+  }
+
+  return channelsMap
+}
+
+func getChannelConfigMap() map[string]ChannelConfig {
+  channelConfigMap := make(map[string]ChannelConfig)
+  for _, channel := range config.Channels {
+    channelConfigMap[channel.Name] = channel
+  }
+
+  return channelConfigMap
 }
 
 func shuffleSlice(slice []string) []string {

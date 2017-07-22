@@ -18,7 +18,7 @@ pocmon is very simple. Under the hood it does a few things:
 
 # Configuration
 
-`config.json` has some basic configuration you can customize:
+`config.json` allows some basic configuration you can customize. You can customize the configuration for each of your channels:
 - `rotate_frequency` crontab-style configuration for the frequency at which you want pocmon to update a POC. pocmon uses [cron](https://github.com/robfig/cron), whose syntax varies slightly from the standard [crontab expression](https://en.wikipedia.org/wiki/Cron#CRON_expression):
 
 ```
