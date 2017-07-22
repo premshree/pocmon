@@ -100,6 +100,5 @@ Invite pocmon to your channel on Slack:
 ```
 
 # TBD
-- Allow configuring "business hours" when pocmon sleeps.
 - Set config by talking to @pocmon directly?
 - Add some tests ¯\\_(ツ)_/¯
