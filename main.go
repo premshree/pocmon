@@ -13,6 +13,8 @@ import (
   "log"
 )
 
+const PRESENCE_ACTIVE = "active"
+
 type Config struct {
   RotateFrequency string `mapstructure:"rotate_frequency"`
   PocMessagePattern string `mapstructure:"poc_message_pattern"`
@@ -41,7 +43,7 @@ func init() {
   c := viper.Sub("config")
   err := c.Unmarshal(&config)
   if err != nil {
-    log.Fatalf("unable to decode config into struct, %v", err)
+    log.Fatalf("unable to decode config into struct: %v", err)
   }
 }
 
@@ -62,6 +64,7 @@ func main() {
 }
 
 func rotate() {
+  log.Print("⟳ Rotating...")
   channels, _ := api.GetChannels(false)
   for _, channel := range channels {
     if !channel.IsMember {
@@ -86,16 +89,28 @@ func getAvailableRotators(channel slack.Channel, replenish bool) []string {
   for _, member := range channel.Members {
     user, err := api.GetUserInfo(member)
     if err != nil {
-      log.Fatal("Error getting channel members")
+      log.Fatalf("Error getting channel members: %v", err)
     }
+
+    presence, err := api.GetUserPresence(member)
+    if err != nil {
+      log.Fatal("Cannot get User Presence")
+    }
+
+    if presence.Presence != PRESENCE_ACTIVE {
+      continue
+    }
+
     if len(config.IncludedRotators) != 0 {
       if !config.IncludedRotators[user.Name] {
         continue
       }
     }
+
     if config.ExcludedRotators[user.Name] {
       continue
     }
+
     if !replenish && rotated[channel.Name][user.Name] {
       continue
     }
