@@ -183,7 +183,10 @@ func updateChannelTopic(channel slack.Channel, rotator string) {
 }
 
 func getAllChannels() map[string]slack.Channel {
-  allChannels, _ := api.GetChannels(false)
+  allChannels, err := api.GetChannels(false)
+  if err != nil {
+    log.Fatalf("Uh oh, error fetching channels: %v", err)
+  }
   channelsMap := make(map[string]slack.Channel)
   for _, channel := range allChannels {
     channelsMap[channel.Name] = channel
