@@ -1,4 +1,5 @@
 {
+  "timezone": "America/New_York",
   "channels": [
     {
       "name": "general",

@@ -19,6 +19,7 @@ const (
 )
 
 type Config struct {
+  TimeZone string `mapstructure:"timezone"`
   Channels []ChannelConfig `mapstructure:"channels"`
 }
 
@@ -72,7 +73,11 @@ func main() {
   rotated = make(map[string]map[string]bool)
   channels = getAllChannels()
 
-  cron := cron.New()
+  location, err := time.LoadLocation(config.TimeZone)
+  if err != nil {
+    log.Fatalf("Uh oh, error getting location for timezone %s", config.TimeZone)
+  }
+  cron := cron.NewWithLocation(location)
   for _, channel := range config.Channels {
     cron.AddFunc(channel.RotateFrequency, rotate(channel.Name))
   }
